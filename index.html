@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mrAvzal — Support</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0c0e;
+    --surface: #141416;
+    --border: #222228;
+    --red: #ff2d55;
+    --red-dim: rgba(255,45,85,0.12);
+    --white: #f0f0f0;
+    --gray: #888;
+    --light: #1a1a1e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* GLOW BG */
+  .glow-blob {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,45,85,0.08) 0%, transparent 70%);
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* LANG TOGGLE */
+  .lang-bar {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    display: flex;
+    gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px;
+  }
+
+  .lang-btn {
+    background: transparent;
+    border: none;
+    color: var(--gray);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+
+  .lang-btn.active {
+    background: var(--red);
+    color: #fff;
+  }
+
+  /* MAIN WRAPPER */
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 60px 20px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* AVATAR */
+  .avatar-ring {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--red), #ff6b35);
+    padding: 2px;
+    margin-bottom: 20px;
+    animation: spin-ring 8s linear infinite;
+  }
+
+  @keyframes spin-ring {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .avatar-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--red);
+    animation: spin-ring 8s linear infinite reverse;
+  }
+
+  /* HEADING */
+  .name {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .name span { color: var(--red); }
+
+  .tagline {
+    color: var(--gray);
+    font-size: 0.9rem;
+    font-weight: 300;
+    text-align: center;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    max-width: 320px;
+  }
+
+  /* CARD */
+  .card {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px 24px;
+    margin-bottom: 16px;
+  }
+
+  .card-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--gray);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  /* AMOUNT INPUT */
+  .amount-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--light);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    transition: border-color 0.2s;
+    margin-bottom: 20px;
+  }
+
+  .amount-wrap:focus-within {
+    border-color: var(--red);
+  }
+
+  .currency {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--red);
+  }
+
+  .amount-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--white);
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    min-width: 0;
+  }
+
+  .amount-input::placeholder { color: #333; }
+
+  /* NAME INPUT */
+  .name-input {
+    width: 100%;
+    background: var(--light);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .name-input:focus { border-color: var(--red); }
+  .name-input::placeholder { color: #444; }
+
+  /* PAYMENT METHODS */
+  .methods {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .method-btn {
+    background: var(--light);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .method-btn:hover {
+    border-color: var(--red);
+    background: var(--red-dim);
+  }
+
+  .method-btn.selected {
+    border-color: var(--red);
+    background: var(--red-dim);
+  }
+
+  .method-icon {
+    font-size: 1.6rem;
+  }
+
+  .method-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .method-desc {
+    font-size: 0.65rem;
+    color: var(--gray);
+  }
+
+  /* DONATE BTN */
+  .donate-btn {
+    width: 100%;
+    background: var(--red);
+    border: none;
+    border-radius: 14px;
+    padding: 18px;
+    color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .donate-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%);
+  }
+
+  .donate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(255,45,85,0.4);
+  }
+
+  .donate-btn:active { transform: translateY(0); }
+
+  .donate-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* SECURE NOTE */
+  .secure {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--gray);
+    font-size: 0.7rem;
+    margin-top: 12px;
+  }
+
+  /* SUCCESS */
+  .success-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+    padding: 40px 20px;
+  }
+
+  .success-screen.show { display: flex; }
+
+  .success-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--red-dim);
+    border: 2px solid var(--red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    animation: pop 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+  }
+
+  @keyframes pop {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .success-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+  }
+
+  .success-msg {
+    color: var(--gray);
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  .back-btn {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    color: var(--gray);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.2s;
+  }
+
+  .back-btn:hover { border-color: var(--red); color: var(--white); }
+
+  /* STRIPE NOTE */
+  .stripe-note {
+    width: 100%;
+    background: rgba(99,91,255,0.08);
+    border: 1px solid rgba(99,91,255,0.2);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 0.75rem;
+    color: #aaa;
+    line-height: 1.7;
+  }
+
+  .stripe-note strong { color: #b8b5ff; }
+
+  /* FADE IN */
+  .wrap > * {
+    animation: fadeUp 0.5s ease both;
+  }
+  .wrap > *:nth-child(1) { animation-delay: 0.05s; }
+  .wrap > *:nth-child(2) { animation-delay: 0.1s; }
+  .wrap > *:nth-child(3) { animation-delay: 0.15s; }
+  .wrap > *:nth-child(4) { animation-delay: 0.2s; }
+  .wrap > *:nth-child(5) { animation-delay: 0.25s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px) {
+    .name { font-size: 1.8rem; }
+    .amount-input { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="glow-blob"></div>
+
+<!-- LANG -->
+<div class="lang-bar">
+  <button class="lang-btn active" onclick="setLang('uz')">UZ</button>
+  <button class="lang-btn" onclick="setLang('en')">EN</button>
+</div>
+
+<div class="wrap">
+
+  <!-- AVATAR -->
+  <div class="avatar-ring">
+    <div class="avatar-inner">mA</div>
+  </div>
+
+  <!-- HEADING -->
+  <h1 class="name">mr<span>Avzal</span></h1>
+  <p class="tagline" data-uz="YouTube kanalimni qo'llab-quvvatlang — har bir xayr-ehson yangi kontentga kuch beradi 🎬" data-en="Support my YouTube channel — every donation fuels new content 🎬">
+    YouTube kanalimni qo'llab-quvvatlang — har bir xayr-ehson yangi kontentga kuch beradi 🎬
+  </p>
+
+  <!-- AMOUNT CARD -->
+  <div class="card" id="main-form">
+    <div class="card-label" data-uz="MIQDOR" data-en="AMOUNT">MIQDOR</div>
+    <div class="amount-wrap">
+      <span class="currency" id="currency-symbol">$</span>
+      <input type="number" class="amount-input" id="amount" placeholder="0" min="1" inputmode="decimal">
+    </div>
+
+    <div class="card-label" data-uz="ISMINGIZ (ixtiyoriy)" data-en="YOUR NAME (optional)">ISMINGIZ (ixtiyoriy)</div>
+    <input type="text" class="name-input" id="donor-name" placeholder="Anonymous">
+  </div>
+
+  <!-- PAYMENT CARD -->
+  <div class="card">
+    <div class="card-label" data-uz="TO'LOV USULI" data-en="PAYMENT METHOD">TO'LOV USULI</div>
+    <div class="methods">
+      <button class="method-btn selected" onclick="selectMethod(this,'stripe')" id="m-stripe">
+        <span class="method-icon">💳</span>
+        <span class="method-name">Stripe</span>
+        <span class="method-desc" data-uz="Visa / Mastercard" data-en="Visa / Mastercard">Visa / Mastercard</span>
+      </button>
+      <button class="method-btn" onclick="selectMethod(this,'click')" id="m-click">
+        <span class="method-icon">🇺🇿</span>
+        <span class="method-name">Click</span>
+        <span class="method-desc" data-uz="O'zbek kartalar" data-en="Uzbek cards">O'zbek kartalar</span>
+      </button>
+    </div>
+
+    <br>
+    <button class="donate-btn" id="donate-btn" onclick="donate()" disabled>
+      <span id="btn-text">Summa kiriting</span>
+    </button>
+
+    <div class="secure">
+      🔒 <span data-uz="Xavfsiz to'lov — karta ma'lumotlari saqlanmaydi" data-en="Secure payment — card data is never stored">Xavfsiz to'lov — karta ma'lumotlari saqlanmaydi</span>
+    </div>
+  </div>
+
+  <!-- STRIPE SETUP NOTE -->
+  <div class="stripe-note" id="setup-note">
+    <strong>⚙️ Sozlash kerak:</strong><br>
+    <span data-uz="Bu demo versiya. Stripe API kalitini va Click Merchant ID ni ulash uchun quyidagi faylni tahrirlang:" data-en="This is a demo. To connect Stripe API key and Click Merchant ID, edit the config below:">Bu demo versiya. Stripe API kalitini va Click Merchant ID ni ulash uchun <code>config</code> ni tahrirlang.</span><br><br>
+    <code style="color:#b8b5ff">STRIPE_KEY = "pk_live_..."</code><br>
+    <code style="color:#7ec8a4">CLICK_MERCHANT = "12345"</code>
+  </div>
+
+</div>
+
+<!-- SUCCESS SCREEN (hidden) -->
+<div class="wrap" id="success-wrap" style="display:none">
+  <div class="success-screen show">
+    <div class="success-icon">✓</div>
+    <h2 class="success-title" data-uz="Rahmat!" data-en="Thank you!">Rahmat!</h2>
+    <p class="success-msg" id="success-msg"></p>
+    <button class="back-btn" onclick="goBack()" data-uz="← Qaytish" data-en="← Go back">← Qaytish</button>
+  </div>
+</div>
+
+<!-- STRIPE JS -->
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+// =============================================
+//  CONFIG — bu yerga o'z kalitlaringizni qo'ying
+// =============================================
+const CONFIG = {
+  STRIPE_PUBLISHABLE_KEY: 'pk_test_XXXXXXXXXXXXXXXXXXXX', // Stripe dashboard dan oling
+  CLICK_MERCHANT_ID: '12345',         // Click Merchant ID
+  CLICK_SERVICE_ID: '12345',          // Click Service ID
+  CURRENCY: 'usd',                    // 'usd' yoki 'uzs'
+  CHANNEL_NAME: 'mrAvzal',
+};
+// =============================================
+
+let selectedMethod = 'stripe';
+let currentLang = 'uz';
+
+// LANG
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  document.querySelectorAll('[data-uz]').forEach(el => {
+    el.textContent = el.dataset[lang] || el.dataset.uz;
+  });
+  updateBtn();
+  document.getElementById('currency-symbol').textContent = lang === 'uz' ? 'UZS' : '$';
+}
+
+function selectMethod(el, method) {
+  selectedMethod = method;
+  document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// AMOUNT VALIDATION
+document.getElementById('amount').addEventListener('input', updateBtn);
+
+function updateBtn() {
+  const val = parseFloat(document.getElementById('amount').value);
+  const btn = document.getElementById('donate-btn');
+  const txt = document.getElementById('btn-text');
+  if (val && val > 0) {
+    btn.disabled = false;
+    const sym = currentLang === 'uz' ? 'UZS ' : '$';
+    const label = currentLang === 'uz'
+      ? `${sym}${val.toLocaleString()} Xayriya qilish →`
+      : `Donate ${sym}${val.toLocaleString()} →`;
+    txt.textContent = label;
+  } else {
+    btn.disabled = true;
+    txt.textContent = currentLang === 'uz' ? 'Summa kiriting' : 'Enter an amount';
+  }
+}
+
+// DONATE
+async function donate() {
+  const amount = parseFloat(document.getElementById('amount').value);
+  const name = document.getElementById('donor-name').value || 'Anonymous';
+  if (!amount || amount <= 0) return;
+
+  const btn = document.getElementById('donate-btn');
+  btn.disabled = true;
+  document.getElementById('btn-text').textContent = currentLang === 'uz' ? 'Yuklanmoqda...' : 'Loading...';
+
+  if (selectedMethod === 'stripe') {
+    await handleStripe(amount, name);
+  } else {
+    handleClick(amount, name);
+  }
+}
+
+// STRIPE
+async function handleStripe(amount, name) {
+  if (CONFIG.STRIPE_PUBLISHABLE_KEY.includes('XXXX')) {
+    showDemo(amount, name, 'Stripe');
+    return;
+  }
+
+  // Real Stripe — backend kerak (Vercel function yoki server)
+  // Bu yerda backend /create-payment-intent ga so'rov yuboradi
+  try {
+    const res = await fetch('/api/create-payment-intent', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ amount: Math.round(amount * 100), currency: CONFIG.CURRENCY, name })
+    });
+    const { clientSecret } = await res.json();
+    const stripe = Stripe(CONFIG.STRIPE_PUBLISHABLE_KEY);
+    const result = await stripe.confirmCardPayment(clientSecret);
+    if (result.error) {
+      alert(result.error.message);
+      resetBtn();
+    } else {
+      showSuccess(amount, name, 'Stripe');
+    }
+  } catch(e) {
+    showDemo(amount, name, 'Stripe');
+  }
+}
+
+// CLICK
+function handleClick(amount, name) {
+  if (CONFIG.CLICK_MERCHANT_ID === '12345') {
+    showDemo(amount, name, 'Click');
+    return;
+  }
+
+  const amountUzs = Math.round(amount);
+  const orderId = Date.now();
+  const clickUrl = `https://my.click.uz/services/pay?service_id=${CONFIG.CLICK_SERVICE_ID}&merchant_id=${CONFIG.CLICK_MERCHANT_ID}&amount=${amountUzs}&transaction_param=${orderId}&return_url=${encodeURIComponent(window.location.href + '?success=1')}`;
+  window.location.href = clickUrl;
+}
+
+// DEMO (kalitlar sozlanmagan bo'lsa)
+function showDemo(amount, name, method) {
+  const sym = currentLang === 'uz' ? 'UZS ' : '$';
+  document.getElementById('main-form').parentElement.style.display = 'none';
+  document.getElementById('setup-note').style.display = 'none';
+  document.getElementById('success-wrap').style.display = 'flex';
+
+  const msg = currentLang === 'uz'
+    ? `${name}, ${sym}${amount.toLocaleString()} miqdoridagi xayriyangiz uchun katta rahmat! 🙏\n\n(Demo rejim — ${method} sozlanmagan)`
+    : `${name}, thank you for your donation of ${sym}${amount.toLocaleString()}! 🙏\n\n(Demo mode — ${method} not configured yet)`;
+
+  document.getElementById('success-msg').textContent = msg;
+  document.querySelectorAll('[data-uz]').forEach(el => {
+    el.textContent = el.dataset[currentLang] || el.dataset.uz;
+  });
+}
+
+function showSuccess(amount, name, method) {
+  showDemo(amount, name, method);
+}
+
+function goBack() {
+  document.getElementById('success-wrap').style.display = 'none';
+  document.querySelector('.wrap:not(#success-wrap)').style.display = 'flex';
+  document.getElementById('setup-note').style.display = 'block';
+  document.getElementById('amount').value = '';
+  resetBtn();
+}
+
+function resetBtn() {
+  updateBtn();
+}
+
+// Check return from Click
+const params = new URLSearchParams(window.location.search);
+if (params.get('success') === '1') {
+  setTimeout(() => showSuccess(0, 'Siz', 'Click'), 100);
+}
+</script>
+</body>
+</html>
